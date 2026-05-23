@@ -10,20 +10,17 @@ import {
 } from 'class-validator';
 import type { RefundMode } from '../../domain/refund-policy';
 
-export class ReviewRefundRequestDto {
-  @ApiPropertyOptional({
-    description: 'Optional admin note recorded on the refund request',
-    maxLength: 2000,
-  })
+export class RefundOrderDto {
+  @ApiPropertyOptional({ maxLength: 2000 })
   @IsOptional()
   @IsString()
   @MaxLength(2000)
-  note?: string;
+  reason?: string;
 
   @ApiPropertyOptional({
     enum: ['POLICY', 'FULL', 'CUSTOM'],
     description:
-      'How much to refund when approving. Defaults to POLICY (75%).',
+      'POLICY = 75% per platform refund policy; FULL = 100%; CUSTOM = explicit amountCents',
     default: 'POLICY',
   })
   @IsOptional()
@@ -31,9 +28,9 @@ export class ReviewRefundRequestDto {
   refundMode?: RefundMode;
 
   @ApiPropertyOptional({
-    description: 'Required when refundMode is CUSTOM (minor units)',
+    description: 'Required when refundMode is CUSTOM (minor units, e.g. cents)',
   })
-  @ValidateIf((o: ReviewRefundRequestDto) => o.refundMode === 'CUSTOM')
+  @ValidateIf((o: RefundOrderDto) => o.refundMode === 'CUSTOM')
   @IsInt()
   @Min(1)
   amountCents?: number;
